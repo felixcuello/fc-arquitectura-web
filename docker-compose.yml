@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  asado_api:
+    platform: linux/amd64 # Esto es solo para máquinas con chip m1
+    build:
+      context: ./asado_api/
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./asado_api:/app
+      - ./data/:/data
+    depends_on:
+      - asado_db
+    networks:
+      - asado_network
+
+  asado_db:
+    image: postgres:14.3-bullseye
+    env_file:
+      - .env
+    volumes:
+      - ./asado_db:/var/lib/postgresql/data
+    networks:
+      - asado_network
+
+networks:
+  asado_network:

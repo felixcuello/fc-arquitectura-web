@@ -2,9 +2,14 @@
 
 El siguiente es el trabajo práctico que voy a realizar para la materia "Arquitectura Web".
 
-** File Server
+** Datos del grupo
 
-La idea de este trabajo práctico es el de armar una API que sea un file server que permita hacer operaciones con archivos en un servidor que estén separadas por usuarios.
+- Nombre del Grupo: **ASADO** (Almacenamiento Seguro de Archivos Durables Organizados)
+- Integrantes: Félix Cuello
+
+** Descripción del Negocio
+
+La idea de este trabajo práctico es el de armar una API que sea un file server al estilo S3 que permita administrar carpetas y archivos de forma tal de que se puedan administrar carpetas y archivos de manera remota.
 
 Mínimamente tiene que permitir hacer lo siguiente:
 
@@ -18,3 +23,21 @@ Mínimamente tiene que permitir hacer lo siguiente:
   - Download
   - Renombrar
   - Borrar
+
+** Instalación
+
+El sistema se podría correr potencialmente standalone, pero para evitar instalar cosas dentro de mi computadora lo voy a utilizar con `docker` y `docker compose`.
+
+Para facilitar el uso, además, voy a utilizar algunos comandos con `make` para simplificar los comandos de docker. Los comandos de make que se pueden utilizar son:
+
+- `make build`: Para construir los containers
+
+- `make psql`: Para iniciar un cliente de psql en el caso de que se quieran ver cosas en la base de datos
+
+- `make setup`: Para hacer el setup inicial de los directorios de base de datos (incluídos en el `.gitignore`). Esto debería hacerse sólo una vez.
+
+- `make shell`: Para iniciar un shell en el container que tiene la API
+
+- `make up`: Para iniciar el servicio
+
+- `make drop_database`: Para borrar la base de datos (posiblemente borre esto en algún momento)
