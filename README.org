@@ -30,21 +30,16 @@ A efectos de este TP NO voy a segmentar por usuarios. Los usuarios serían el "n
 
 ** Instalación
 
-El sistema se podría correr potencialmente standalone, pero para evitar instalar cosas dentro de mi computadora lo voy a utilizar con ```docker``` y ```docker compose```.
+El sistema se podría correr potencialmente standalone, pero para evitar instalar cosas dentro de mi computadora lo voy a utilizar con *docker* y *docker compose*.
 
-Para facilitar el uso, además, voy a utilizar algunos comandos con ```make``` para simplificar los comandos de docker. Los comandos de make que se pueden utilizar son:
+Para facilitar el uso, además, voy a utilizar algunos comandos con *make* para simplificar los comandos de docker. Los comandos de make que se pueden utilizar son:
 
-- ```make build```: Para construir los containers
-
-- ```make psql```: Para iniciar un cliente de psql en el caso de que se quieran ver cosas en la base de datos
-
-- ```make setup```: Para hacer el setup inicial de los directorios de base de datos (incluídos en el ```.gitignore```). Esto debería hacerse sólo una vez.
-
-- ```make shell```: Para iniciar un shell en el container que tiene la API
-
-- ```make up```: Para iniciar el servicio
-
-- ```make drop_database```: Para borrar la base de datos (posiblemente borre esto en algún momento)
+: make build          # Construir los containers
+: make psql           # Para iniciar un cliente de psql en el caso de que se quieran ver cosas en la base de datos
+: make setup          # Hace el setup inicial de los directorios de base de datos (SOLO HACER UNA VEZ)
+: make shell          # Inicia un shell en el container de API
+: make up             # Iniciar el servicio
+: make drop_database  # Borra la base de datos completamente
 
 
 ** Endpoints
@@ -53,32 +48,31 @@ Los endpoints de carpetas administran las carpetas.
 
 **** POST /location/carpeta/nueva
 Este endpoint crea una nueva carpeta.
-Por ejemplo: ```curl -X POST /location/carpeta/nueva```
+: curl -X POST /location/carpeta/nueva
 
 **** DELETE /location/carpeta/a/borrar
-Este endpoint borra una carpeta
-Por ejemplo: ```curl -X DELETE /location/carpeta/a/borrar/```
-Cabe aclarar que esta acción es irreversible y, además, borra los archivos y subcarpetas contenidas.
+Este endpoint borra una carpeta. ESTA OPERACIÓN ES IRREVERSIBLE.
+: curl -X DELETE /location/carpeta/a/borrar/
 
 **** PATCH /location/carpeta
 Este endpoint renombra una carpeta.
-Por ejemplo: ```curl -X PATCH /location/carpeta/ -d '{"new_location":"/carpeta/nueva/"}'```
+: curl -X PATCH /location/carpeta/ -d '{"new_location":"/carpeta/nueva/"}'
 
 *** Archivos
 Los endpoints de archivos administran los archivos adentro de las carpetas.
 
 **** POST /file/carpeta/destino/filename
 Este endpoint permite subir un archivo a una determinada carpeta.
-Por ejemplo: ```curl -X POST /file/carpeta/destino/filename``` -F file=/tu/archivo'
+: curl -X POST /file/carpeta/destino/filename -F file=/tu/archivo
 
 **** GET /file/carpeta/destino/filename
 Este endpoint permite descargar un archivo de una determinada carpeta
-Por ejemplo: ```curl -X GET /file/carpeta/destino/filename```'
+: curl -X GET /file/carpeta/destino/filename
 
 **** PATCH /file/carpeta/filename
 Este endpoint permite renombrar un archivo (o moverlo de ubicación). Si se especifica un nombre sin path el archivo sólo cambia de nombre.
-Por ejemplo: ```curl -X PATCH /file/carpeta/destino/filename``` -d '{"new_name":"/nueva/ubicacion/nuevo_nombre"}''
+: curl -X PATCH /file/carpeta/destino/filename -d '{"new_name":"/nueva/ubicacion/nuevo_nombre"}'
 
 **** DELETE /file/carpeta/destino/filename
 Este endpoint permite borrar un archivo
-Por ejemplo: ```curl -X DELETE /file/carpeta/destino/filename```'
+: curl -X DELETE /file/carpeta/destino/filename
