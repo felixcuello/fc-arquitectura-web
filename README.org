@@ -4,7 +4,7 @@ El siguiente es el trabajo práctico que voy a realizar para la materia "Arquite
 
 ** Datos del grupo
 
-- Nombre del Grupo: **ASADO** (Almacenamiento Seguro de Archivos Durables Organizados)
+- Nombre del Grupo: *ASADO* (Almacenamiento Seguro de Archivos Durables Organizados)
 - Integrantes: Félix Cuello
 
 ** Descripción del Negocio
@@ -40,6 +40,12 @@ Para facilitar el uso, además, voy a utilizar algunos comandos con *make* para 
 : make shell          # Inicia un shell en el container de API
 : make up             # Iniciar el servicio
 : make drop_database  # Borra la base de datos completamente
+
+*** Configuración Inicial
+Sólo hay que correr el siguiente comando para que inicialice todo.
+: make setup
+
+Cabe aclarar que es necesario tener el comando *make* instalado que funciona como helper.
 
 
 ** Endpoints
