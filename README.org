@@ -1,5 +1,4 @@
 * Arquitectura Web - TP
-:
 :    ,---,       .--.--.      ,---,           ,---,       /   /   \
 :  .'     \     /  /    '.   '  .' \        .'  .' `\    /   .     :
 : /   ;    '.  |  :  /`. /  /  ;    '.    ,---.'     \  .   /   ;.  \
@@ -14,7 +13,6 @@
 : `--''                    `--''          |   ,.'          `---`
 :                                         '---'
 :      Almacenamiento Seguro de Archivos Durables Organizados
-:
 
 ** Datos del grupo
 
