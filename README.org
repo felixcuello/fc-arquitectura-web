@@ -89,11 +89,11 @@ Los endpoints de archivos administran los archivos adentro de las carpetas.
 
 **** POST /file/carpeta/destino/filename
 Este endpoint permite subir un archivo a una determinada carpeta.
-: curl -X POST /file/carpeta/destino/filename -F file=/tu/archivo
+: curl -v -X POST localhost:3000/file/carpeta/asdf/filename -F file=@docker-compose.yml
 
 **** GET /file/carpeta/destino/filename
 Este endpoint permite descargar un archivo de una determinada carpeta
-: curl -X GET /file/carpeta/destino/filename
+: curl -X GET localhost:3000/file/carpeta/asdf/filename
 
 **** PATCH /file/carpeta/filename
 Este endpoint permite renombrar un archivo (o moverlo de ubicación). Si se especifica un nombre sin path el archivo sólo cambia de nombre.

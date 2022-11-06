@@ -1,4 +1,4 @@
-npm install express pg-promise nodemon uuid
+npm install express express-fileupload pg-promise nodemon uuid
 
 # Esto es una mala práctica. Pero es una salida fácil para algo que
 # no se ejecuta tannto... :-)
