@@ -10,7 +10,7 @@ services:
       - .env
     volumes:
       - ./asado_api:/app
-      - ./data/:/data
+      - ./data:/data
     depends_on:
       - asado_db
     ports:
@@ -24,6 +24,7 @@ services:
       - .env
     volumes:
       - ./asado_db:/var/lib/postgresql/data
+      - ./sql:/sql
     networks:
       - asado_network
 
