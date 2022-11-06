@@ -62,7 +62,38 @@ app.post(/\/location\/.+/, (req, res) => {
     .catch(function(error) {
       res.status(500).send('ERROR1, hubo un error al crear la carpeta => ' + new_folder_location);
     });
+});
 
+///////////////////////////////////////////////////
+// CREAR carpeta
+///////////////////////////////////////////////////
+app.delete(/\/location\/.+/, (req, res) => {
+  const new_folder_location = req.originalUrl.split(/\/location/)[1];
+  db.any('SELECT uuid FROM folder WHERE location = $1', [new_folder_location])
+    .then(function(data) {
+      if(data.length == 0) {
+        res.status(404).send('La carpeta NO existe => ' + new_folder_location);
+      } else {
+        const folder_uuid = data[0]['uuid'];
+
+        db.any('DELETE FROM file WHERE folder_uuid = $1', [folder_uuid])
+          .then(function(data) {
+            db.any('DELETE FROM folder WHERE uuid = $1', [folder_uuid])
+              .then(function(data) {
+                res.status(200).send('OK, la carpeta fue borrada con éxito => ' + new_folder_location);
+              })
+              .catch(function(error) {
+                res.status(500).send('ERROR3, hubo un error al borrar la carpeta => ' + new_folder_location);
+              });
+          })
+          .catch(function(error) {
+            res.status(500).send('ERROR2, hubo un error al borrar los archivos de la carpeta => ' + new_folder_location);
+          });
+      }
+    })
+    .catch(function(error) {
+      res.status(500).send('ERROR1, al borrar la carpeta => ' + new_folder_location);
+    });
 });
 
 ///////////////////////////////////////////////////////////////
