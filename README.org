@@ -39,7 +39,10 @@ Para facilitar el uso, además, voy a utilizar algunos comandos con *make* para 
 : make setup          # Hace el setup inicial de los directorios de base de datos (SOLO HACER UNA VEZ)
 : make shell          # Inicia un shell en el container de API
 : make up             # Iniciar el servicio
-: make drop_database  # Borra la base de datos completamente
+: make db_create      # Crea las tablas de la base de datos
+: make db_drop        # Borra la base de datos completamente
+: make db_migrate     # Crea las tablas de la base de datos
+: make db_shell       # Abre un shell en el container de la base de datos
 
 *** Configuración Inicial
 Sólo hay que correr el siguiente comando para que inicialice todo.
