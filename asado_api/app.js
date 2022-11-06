@@ -4,6 +4,13 @@
 const express = require('express');
 const uuid = require('uuid');
 const app = express();
+
+app.use(express.json({
+  limit: '100kb',
+  type: 'application/json',
+  verify: undefined
+}))
+
 const port = 3000;
 
 
@@ -65,14 +72,15 @@ app.post(/\/location\/.+/, (req, res) => {
 });
 
 ///////////////////////////////////////////////////
-// CREAR carpeta
+// BORRAR carpeta
 ///////////////////////////////////////////////////
 app.delete(/\/location\/.+/, (req, res) => {
-  const new_folder_location = req.originalUrl.split(/\/location/)[1];
-  db.any('SELECT uuid FROM folder WHERE location = $1', [new_folder_location])
+  const folder_location = req.originalUrl.split(/\/location/)[1];
+
+  db.any('SELECT uuid FROM folder WHERE location = $1', [folder_location])
     .then(function(data) {
       if(data.length == 0) {
-        res.status(404).send('La carpeta NO existe => ' + new_folder_location);
+        res.status(404).send('La carpeta NO existe => ' + folder_location);
       } else {
         const folder_uuid = data[0]['uuid'];
 
@@ -80,21 +88,50 @@ app.delete(/\/location\/.+/, (req, res) => {
           .then(function(data) {
             db.any('DELETE FROM folder WHERE uuid = $1', [folder_uuid])
               .then(function(data) {
-                res.status(200).send('OK, la carpeta fue borrada con éxito => ' + new_folder_location);
+                res.status(200).send('OK, la carpeta fue borrada con éxito => ' + folder_location);
               })
               .catch(function(error) {
-                res.status(500).send('ERROR3, hubo un error al borrar la carpeta => ' + new_folder_location);
+                res.status(500).send('ERROR3, hubo un error al borrar la carpeta => ' + folder_location);
               });
           })
           .catch(function(error) {
-            res.status(500).send('ERROR2, hubo un error al borrar los archivos de la carpeta => ' + new_folder_location);
+            res.status(500).send('ERROR2, hubo un error al borrar los archivos de la carpeta => ' + folder_location);
           });
       }
     })
     .catch(function(error) {
-      res.status(500).send('ERROR1, al borrar la carpeta => ' + new_folder_location);
+      res.status(500).send('ERROR1, al borrar la carpeta => ' + folder_location);
     });
 });
+
+///////////////////////////////////////////////////
+// RENOMBRAR carpeta
+///////////////////////////////////////////////////
+app.patch(/\/location\/.+/, (req, res) => {
+  const folder_location = req.originalUrl.split(/\/location/)[1];
+
+  db.any('SELECT uuid FROM folder WHERE location = $1', [folder_location])
+    .then(function(data) {
+      if(data.length == 0) {
+        res.status(404).send('La carpeta NO existe => ' + folder_location);
+      } else {
+        const folder_uuid = data[0]['uuid'];
+        const new_folder_location = req.body['new_location'];
+
+        db.any('UPDATE folder SET location = $1 WHERE uuid = $2', [new_folder_location, folder_uuid])
+          .then(function(data) {
+            res.status(200).send('OK, la carpeta fue renombrada con éxito ' + folder_location + ' => ' + new_folder_location);
+          })
+          .catch(function(error) {
+            res.status(500).send('ERROR2, hubo un error al renombrar la carpeta => ' + folder_location);
+          });
+      }
+    })
+    .catch(function(error) {
+      res.status(500).send('ERROR1, al renombrar la carpeta => ' + folder_location);
+    });
+});
+
 
 ///////////////////////////////////////////////////////////////
 /// STARTUP MESSAGE (Sí, es medio mersa)

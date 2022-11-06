@@ -78,11 +78,11 @@ Este endpoint crea una nueva carpeta.
 
 **** DELETE /location/carpeta/a/borrar
 Este endpoint borra una carpeta. ESTA OPERACIÓN ES IRREVERSIBLE.
-: curl -v -X DELETE /location/carpeta/a/borrar/
+: curl -v -X DELETE localhost:3000/location/carpeta/a/borrar/
 
 **** PATCH /location/carpeta
 Este endpoint renombra una carpeta.
-: curl -X PATCH /location/carpeta/ -d '{"new_location":"/carpeta/nueva/"}'
+: curl -v -X PATCH localhost:3000/location/carpeta/asdf -d '{"new_location":"/carpeta/fdsa/"}'
 
 *** Archivos
 Los endpoints de archivos administran los archivos adentro de las carpetas.
