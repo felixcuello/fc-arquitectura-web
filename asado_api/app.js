@@ -2,6 +2,7 @@
 // Gracias express por tanto, perdón por tan poco
 ///////////////////////////////////////////////////////////////
 const express = require('express');
+const uuid = require('uuid');
 const app = express();
 const port = 3000;
 
@@ -31,10 +32,38 @@ db.connect() // https://stackoverflow.com/questions/36120435/verify-database-con
 ///////////////////////////////////////////////////////////////
 /// ENDPOINTS
 ///////////////////////////////////////////////////////////////
+
+
+// Esto sería como para poner en un health-check para un load balancer
 app.get('/ping', (req, res) => {
   res.send('pong');
 })
 
+///////////////////////////////////////////////////
+// CREAR carpeta
+///////////////////////////////////////////////////
+app.post(/\/location\/.+/, (req, res) => {
+  const new_folder_location = req.originalUrl.split(/\/location/)[1];
+  db.any('SELECT COUNT(*) FROM folder WHERE location = $1', [new_folder_location])
+    .then(function(data) {
+      if(data[0]['count'] != 0) {
+        res.status(409).send('La carpeta ya existe => ' + new_folder_location);
+      } else {
+        const new_uuid = uuid.v4();
+        db.any('INSERT INTO folder (uuid, location) VALUES ($1, $2)', [new_uuid, new_folder_location])
+          .then(function(data) {
+            res.status(200).send('OK, la carpeta fue creada con éxito => ' + new_folder_location);
+          })
+          .catch(function(error) {
+            res.status(500).send('ERROR2, hubo un error al crear la carpeta => ' + new_folder_location);
+          });
+      }
+    })
+    .catch(function(error) {
+      res.status(500).send('ERROR1, hubo un error al crear la carpeta => ' + new_folder_location);
+    });
+
+});
 
 ///////////////////////////////////////////////////////////////
 /// STARTUP MESSAGE (Sí, es medio mersa)

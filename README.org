@@ -52,16 +52,21 @@ Cabe aclarar que es necesario tener el comando *make* instalado que funciona com
 
 
 ** Endpoints
+*** Extras
+**** GET /ping
+Este endpoint es para un keep_alive (que se podría configurar en un load balancer)
+: curl -X GET localhost:3000/ping
+
 *** Carpetas
 Los endpoints de carpetas administran las carpetas.
 
 **** POST /location/carpeta/nueva
 Este endpoint crea una nueva carpeta.
-: curl -X POST /location/carpeta/nueva
+: curl -v -X POST localhost:3000/location/carpeta/nueva
 
 **** DELETE /location/carpeta/a/borrar
 Este endpoint borra una carpeta. ESTA OPERACIÓN ES IRREVERSIBLE.
-: curl -X DELETE /location/carpeta/a/borrar/
+: curl -v -X DELETE /location/carpeta/a/borrar/
 
 **** PATCH /location/carpeta
 Este endpoint renombra una carpeta.
