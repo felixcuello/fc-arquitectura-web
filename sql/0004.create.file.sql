@@ -1,6 +1,6 @@
 -- crea la tabla de archivos
 CREATE TABLE file (
-  id UUID PRIMARY KEY,
+  uuid UUID PRIMARY KEY,
   location UUID NOT NULL,
   filename VARCHAR(255) NOT NULL,
   folder_uuid UUID NOT NULL,
