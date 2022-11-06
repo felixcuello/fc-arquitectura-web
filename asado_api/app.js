@@ -46,17 +46,21 @@ app.get('/ping', (req, res) => {
   res.send('pong');
 })
 
+
 ///////////////////////////////////////////////////
 // CREAR carpeta
 ///////////////////////////////////////////////////
 app.post(/\/location\/.+/, (req, res) => {
-  const new_folder_location = req.originalUrl.split(/\/location/)[1];
+  new_folder_location = req.originalUrl.split(/^\/location/)[1];
+
   db.any('SELECT COUNT(*) FROM folder WHERE location = $1', [new_folder_location])
     .then(function(data) {
       if(data[0]['count'] != 0) {
         res.status(409).send('La carpeta ya existe => ' + new_folder_location);
       } else {
         const new_uuid = uuid.v4();
+        new_folder_location = new_folder_location.replace(/\/$/, '');
+
         db.any('INSERT INTO folder (uuid, location) VALUES ($1, $2)', [new_uuid, new_folder_location])
           .then(function(data) {
             res.status(200).send('OK, la carpeta fue creada con éxito => ' + new_folder_location);
@@ -71,11 +75,12 @@ app.post(/\/location\/.+/, (req, res) => {
     });
 });
 
+
 ///////////////////////////////////////////////////
 // BORRAR carpeta
 ///////////////////////////////////////////////////
 app.delete(/\/location\/.+/, (req, res) => {
-  const folder_location = req.originalUrl.split(/\/location/)[1];
+  const folder_location = req.originalUrl.split(/^\/location/)[1];
 
   db.any('SELECT uuid FROM folder WHERE location = $1', [folder_location])
     .then(function(data) {
@@ -104,11 +109,12 @@ app.delete(/\/location\/.+/, (req, res) => {
     });
 });
 
+
 ///////////////////////////////////////////////////
 // RENOMBRAR carpeta
 ///////////////////////////////////////////////////
 app.patch(/\/location\/.+/, (req, res) => {
-  const folder_location = req.originalUrl.split(/\/location/)[1];
+  const folder_location = req.originalUrl.split(/^\/location/)[1];
 
   db.any('SELECT uuid FROM folder WHERE location = $1', [folder_location])
     .then(function(data) {
@@ -116,7 +122,8 @@ app.patch(/\/location\/.+/, (req, res) => {
         res.status(404).send('La carpeta NO existe => ' + folder_location);
       } else {
         const folder_uuid = data[0]['uuid'];
-        const new_folder_location = req.body['new_location'];
+        new_folder_location = req.body['new_location'];
+        new_folder_location = new_folder_location.replace(/\/$/, '');
 
         db.any('UPDATE folder SET location = $1 WHERE uuid = $2', [new_folder_location, folder_uuid])
           .then(function(data) {
@@ -131,6 +138,15 @@ app.patch(/\/location\/.+/, (req, res) => {
       res.status(500).send('ERROR1, al renombrar la carpeta => ' + folder_location);
     });
 });
+
+
+///////////////////////////////////////////////////
+// CREAR archivo
+///////////////////////////////////////////////////
+app.post(/\/file\/.+/, (req, res) => {
+  const new_file = req.originalUrl.split(/^\/file/)[1];
+});
+
 
 
 ///////////////////////////////////////////////////////////////

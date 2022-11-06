@@ -89,7 +89,7 @@ Los endpoints de archivos administran los archivos adentro de las carpetas.
 
 **** POST /file/carpeta/destino/filename
 Este endpoint permite subir un archivo a una determinada carpeta.
-: curl -X POST /file/carpeta/destino/filename -F file=/tu/archivo
+: curl -X POST localhost:3000/file/carpeta/destino/filename -F file=/tu/archivo
 
 **** GET /file/carpeta/destino/filename
 Este endpoint permite descargar un archivo de una determinada carpeta
