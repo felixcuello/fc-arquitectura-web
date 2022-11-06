@@ -179,7 +179,7 @@ app.post(/\/file\/.+/, (req, res) => {
         db.any('SELECT uuid FROM file WHERE folder_uuid = $1 AND filename=$2', [folder_uuid, filename])
           .then(function(data) {
             if(data.length != 0) {
-              console.log('[WARN] Ya existe un archivo con ese nombre' + destination);
+              console.log('[WARN] Ya existe un archivo con ese nombre => ' + destination);
               res.status(409).send('La ya existe un archivo con ese nombre => ' + destination);
             } else {
               if(!req.files) {
@@ -212,6 +212,48 @@ app.post(/\/file\/.+/, (req, res) => {
     });
 });
 
+
+///////////////////////////////////////////////////
+// OBTENER archivo
+///////////////////////////////////////////////////
+app.get(/\/file\/.+/, (req, res) => {
+  const destination = req.originalUrl.split(/^\/file/)[1];
+  match = destination.match(/^(.+?)\/([^\/]+)$/);
+  const folder_location = match[1].replace(/\/$/, '');
+  const filename = match[2]
+
+  // chequear la existencia de la carpeta
+  db.any('SELECT uuid FROM folder WHERE location = $1', [folder_location])
+    .then(function(data) {
+      if(data.length == 0) {
+        console.log('[WARN] Carpeta inexistente' + folder_location);
+        res.status(404).send('La carpeta NO existe => ' + folder_location);
+      } else {
+        const folder_uuid = data[0]['uuid'];
+
+        // chequear que no haya un archivo con ese nombre en la carpeta
+        db.any('SELECT filename, content FROM file WHERE folder_uuid = $1 AND filename=$2', [folder_uuid, filename])
+          .then(function(data) {
+            if(data.length == 0) {
+              console.log('[WARN] No existe un archivo con ese nombre => ' + destination);
+              res.status(409).send('No existe un archivo con ese nombre => ' + destination);
+            } else {
+              const content = data[0]['content'];
+              console.log('[INFO] Archivo descargado => ' + destination);
+              res.status(200).send(content);
+            }
+          })
+          .catch(function(error) {
+            console.log('[ERROR] No se puede descargar el archivo ' + filename);
+            res.status(500).send('ERROR3, al descargar el archivo => ' + destination);
+          });
+      }
+    })
+    .catch(function(error) {
+      res.status(500).send('ERROR1, al descargar el archivo => ' + destination);
+    });
+
+});
 
 
 ///////////////////////////////////////////////////////////////
