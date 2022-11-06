@@ -52,6 +52,40 @@ app.get('/ping', (req, res) => {
 
 
 ///////////////////////////////////////////////////
+// LISTAR carpeta
+///////////////////////////////////////////////////
+app.get(/\/location\/.+/, (req, res) => {
+  const folder_location = req.originalUrl.split(/^\/location/)[1];
+
+  db.any('SELECT uuid FROM folder WHERE location = $1', [folder_location])
+    .then(function(data) {
+      if(data.length == 0) {
+        console.log('[WARN] Carpeta Inexistente ' + folder_location);
+        res.status(404).send('La carpeta NO existe => ' + folder_location);
+      } else {
+        const folder_uuid = data[0]['uuid'];
+
+        db.any('SELECT fo.location, fi.filename FROM folder fo, file fi WHERE fi.folder_uuid = fo.uuid AND fo.uuid = $1', [folder_uuid])
+          .then(function(data) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200).send(data);
+          })
+          .catch(function(error) {
+            console.log('[ERROR] listando Carpeta' + folder_location);
+            res.status(500).send('ERROR2, hubo un error al listar los archivos de la carpeta => ' + folder_location);
+          });
+      }
+    })
+    .catch(function(error) {
+      console.log('[ERROR] Listando Carpeta' + folder_location);
+      res.status(500).send('ERROR1, al listar la carpeta => ' + folder_location);
+    });
+});
+
+
+
+
+///////////////////////////////////////////////////
 // CREAR carpeta
 ///////////////////////////////////////////////////
 app.post(/\/location\/.+/, (req, res) => {

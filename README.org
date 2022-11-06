@@ -72,6 +72,10 @@ Este endpoint es para un keep_alive (que se podría configurar en un load balanc
 *** Carpetas
 Los endpoints de carpetas administran las carpetas.
 
+**** GET /location/carpeta/nueva
+Este endpoint lista el contenido de la carpeta actual
+: curl -v -X GET localhost:3000/location/carpeta/asdf
+
 **** POST /location/carpeta/nueva
 Este endpoint crea una nueva carpeta.
 : curl -v -X POST localhost:3000/location/carpeta/nueva
