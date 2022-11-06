@@ -1,5 +1,4 @@
-npm install express
-npm install pg-promise
+npm install express pg-promise nodemon uuid
 
 # Esto es una mala práctica. Pero es una salida fácil para algo que
 # no se ejecuta tannto... :-)
@@ -9,4 +8,5 @@ echo "Esperando ${WAITING_TIME} segundos por la base de datos :-)"
 echo "------------------------------------------------"
 sleep ${WAITING_TIME}
 
-node app.js
+# NOTE: "nodemon" lo pongo para hacer el TP, pero no está bueno usarlo en PROD por las dudas
+npx nodemon app.js
