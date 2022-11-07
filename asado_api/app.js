@@ -351,6 +351,42 @@ app.patch(/\/file\/.+/, (req, res) => {
 });
 
 
+///////////////////////////////////////////////////
+// BORRAR ARCHIVO
+///////////////////////////////////////////////////
+
+app.delete(/\/file\/.+/, (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+
+  const file_location = req.originalUrl.split(/^\/file/)[1];
+  match = file_location.match(/^(.+?)\/([^\/]+)$/);
+  const folder_location = match[1].replace(/\/$/, '');
+  const filename = match[2]
+
+  db.any('SELECT fi.uuid FROM file fi, folder fo WHERE fo.uuid = fi.folder_uuid AND fo.location = $1 AND fi.filename = $2', [folder_location, filename])
+    .then(function(data) {
+      if(data.length == 0) {
+        console.log('[WARN] El archivo o la carpeta no existen' + file_location);
+        res.status(404).send({'error': 'El archivo NO existe', 'location': file_location});
+      } else {
+        const file_uuid = data[0]['uuid'];
+
+        db.any('DELETE FROM file WHERE uuid = $1', [file_uuid])
+          .then(function(data) {
+            res.status(200).send({'message': 'El archivo fue borrado con éxito', 'location': file_location});
+          })
+          .catch(function(error) {
+            console.log('[ERROR] Borrando Archivo ' + file_location);
+            res.status(500).send({'error': 'Hubo un error al borrar el archivo', 'location': file_location});
+          });
+      }
+    })
+    .catch(function(error) {
+      console.log('[ERROR] Borrando Archivo ' + file_location);
+      res.status(500).send({'error': 'Hubo un error al borrar el archivo', 'location': file_location});
+    });
+});
+
 
 ///////////////////////////////////////////////////////////////
 /// STARTUP MESSAGE (Sí, es medio mersa)
