@@ -99,9 +99,10 @@ Este endpoint permite subir un archivo a una determinada carpeta.
 Este endpoint permite descargar un archivo de una determinada carpeta
 : curl -X GET localhost:3000/file/carpeta/asdf/filename
 
-**** PATCH /file/carpeta/filename <<<<<<<<<<<<<<<<<<<<<< NO FUNCIONA
+**** PATCH /file/carpeta/filename
 Este endpoint permite renombrar un archivo (o moverlo de ubicación). Si se especifica un nombre sin path el archivo sólo cambia de nombre.
-: curl -v -X PATCH localhost:3000/file/carpeta/asdf/filename -H "Content-Type: application/json" -d '{"new_name":"/carpeta/nueva/nuevo_nombre"}'
+: curl -v -X PATCH localhost:3000/file/carpeta/asdf/filename -H "Content-Type: application/json" -d '{"new_location":"/carpeta/nueva/nuevo_nombre"}'
+
 **** DELETE /file/carpeta/destino/filename
 Este endpoint permite borrar un archivo
 : curl -X DELETE /file/carpeta/destino/filename
