@@ -55,30 +55,30 @@ app.get('/ping', (req, res) => {
 // LISTAR carpeta
 ///////////////////////////////////////////////////
 app.get(/\/location\/.+/, (req, res) => {
-  const folder_location = req.originalUrl.split(/^\/location/)[1];
+  const folder_location = req.originalUrl.split(/^\/location/)[1].replace(/\/$/, '');
+  res.setHeader('Content-Type', 'application/json');
 
   db.any('SELECT uuid FROM folder WHERE location = $1', [folder_location])
     .then(function(data) {
       if(data.length == 0) {
         console.log('[WARN] Carpeta Inexistente ' + folder_location);
-        res.status(404).send('La carpeta NO existe => ' + folder_location);
+        res.status(404).send({'error': 'Carpeta inexistente', 'location': folder_location});
       } else {
         const folder_uuid = data[0]['uuid'];
 
         db.any('SELECT fo.location, fi.filename FROM folder fo, file fi WHERE fi.folder_uuid = fo.uuid AND fo.uuid = $1', [folder_uuid])
           .then(function(data) {
-            res.setHeader('Content-Type', 'application/json');
-            res.status(200).send(data);
+            res.status(200).send({'files': data});
           })
           .catch(function(error) {
             console.log('[ERROR] listando Carpeta' + folder_location);
-            res.status(500).send('ERROR2, hubo un error al listar los archivos de la carpeta => ' + folder_location);
+            res.status(500).send({'error': 'Hubo un error al listar los archivos de la carpeta', 'location': folder_location});
           });
       }
     })
     .catch(function(error) {
       console.log('[ERROR] Listando Carpeta' + folder_location);
-      res.status(500).send('ERROR1, al listar la carpeta => ' + folder_location);
+      res.status(500).send({'error': 'Hubo un error al listar los archivos de la carpeta', 'location': folder_location});
     });
 });
 
@@ -90,12 +90,13 @@ app.get(/\/location\/.+/, (req, res) => {
 ///////////////////////////////////////////////////
 app.post(/\/location\/.+/, (req, res) => {
   new_folder_location = req.originalUrl.split(/^\/location/)[1];
+  res.setHeader('Content-Type', 'application/json');
 
   db.any('SELECT COUNT(*) FROM folder WHERE location = $1', [new_folder_location])
     .then(function(data) {
       if(data[0]['count'] != 0) {
         console.log('[ERROR] Carpeta Existente ' + new_folder_location);
-        res.status(409).send('La carpeta ya existe => ' + new_folder_location);
+        res.status(409).send({'error': 'La carpeta ya existe', 'location': new_folder_location});
       } else {
         const new_uuid = uuid.v4();
         new_folder_location = new_folder_location.replace(/\/$/, '');
@@ -103,17 +104,17 @@ app.post(/\/location\/.+/, (req, res) => {
         db.any('INSERT INTO folder (uuid, location) VALUES ($1, $2)', [new_uuid, new_folder_location])
           .then(function(data) {
             console.log('[OK] Carpeta Creada ' + new_folder_location);
-            res.status(200).send('OK, la carpeta fue creada con éxito => ' + new_folder_location);
+            res.status(200).send({'message': 'La carpeta fue creada con éxito', 'location': new_folder_location});
           })
           .catch(function(error) {
             console.log('[ERROR] Creando Carpeta ' + new_folder_location);
-            res.status(500).send('ERROR2, hubo un error al crear la carpeta => ' + new_folder_location);
+            res.status(500).send({'error': 'Hubo un error al crear la carpeta', 'location': new_folder_location});
           });
       }
     })
     .catch(function(error) {
       console.log('[ERROR] Creando Carpeta ' + new_folder_location);
-      res.status(500).send('ERROR1, hubo un error al crear la carpeta => ' + new_folder_location);
+      res.status(500).send({'error': 'Hubo un error al crear la carpeta', 'location': new_folder_location});
     });
 });
 
@@ -123,12 +124,13 @@ app.post(/\/location\/.+/, (req, res) => {
 ///////////////////////////////////////////////////
 app.delete(/\/location\/.+/, (req, res) => {
   const folder_location = req.originalUrl.split(/^\/location/)[1];
+  res.setHeader('Content-Type', 'application/json');
 
   db.any('SELECT uuid FROM folder WHERE location = $1', [folder_location])
     .then(function(data) {
       if(data.length == 0) {
         console.log('[WARN] Borrando Carpeta Inexistente ' + folder_location);
-        res.status(404).send('La carpeta NO existe => ' + folder_location);
+        res.status(404).send({'error': 'La carpeta NO existe', 'location': folder_location});
       } else {
         const folder_uuid = data[0]['uuid'];
 
@@ -137,22 +139,22 @@ app.delete(/\/location\/.+/, (req, res) => {
             db.any('DELETE FROM folder WHERE uuid = $1', [folder_uuid])
               .then(function(data) {
                 console.log('[INFO] Carpeta Borrada ' + folder_location);
-                res.status(200).send('OK, la carpeta fue borrada con éxito => ' + folder_location);
+                res.status(200).send({'message': 'La carpeta fue borrada con éxito', 'location': folder_location});
               })
               .catch(function(error) {
                 console.log('[ERROR] Borrando Carpeta' + folder_location);
-                res.status(500).send('ERROR3, hubo un error al borrar la carpeta => ' + folder_location);
+                res.status(500).send({'error': 'Hubo un error al borrar la carpeta', 'location': folder_location});
               });
           })
           .catch(function(error) {
             console.log('[ERROR] Borrando Carpeta' + folder_location);
-            res.status(500).send('ERROR2, hubo un error al borrar los archivos de la carpeta => ' + folder_location);
+            res.status(500).send({'error': 'Hubo un error al borrar la carpeta', 'location': folder_location});
           });
       }
     })
     .catch(function(error) {
       console.log('[ERROR] Borrando Carpeta' + folder_location);
-      res.status(500).send('ERROR1, al borrar la carpeta => ' + folder_location);
+      res.status(500).send({'error': 'Hubo un error al borrar la carpeta', 'location': folder_location});
     });
 });
 
@@ -162,31 +164,31 @@ app.delete(/\/location\/.+/, (req, res) => {
 ///////////////////////////////////////////////////
 app.patch(/\/location\/.+/, (req, res) => {
   const folder_location = req.originalUrl.split(/^\/location/)[1];
+  res.setHeader('Content-Type', 'application/json');
 
   db.any('SELECT uuid FROM folder WHERE location = $1', [folder_location])
     .then(function(data) {
       if(data.length == 0) {
         console.log('[WARN] Renombrando Carpeta Inexistente ' + folder_location);
-        res.status(404).send('La carpeta NO existe => ' + folder_location);
+        res.status(404).send({'error': 'La carpeta NO existe', 'location': folder_location});
       } else {
         const folder_uuid = data[0]['uuid'];
-        new_folder_location = req.body['new_location'];
-        new_folder_location = new_folder_location.replace(/\/$/, '');
+        new_folder_location = req.body['new_location'].replace(/\/$/, '');
 
         db.any('UPDATE folder SET location = $1 WHERE uuid = $2', [new_folder_location, folder_uuid])
           .then(function(data) {
             console.log('[INFO] Carpeta Renombrada ' + folder_location + ' => ' + new_folder_location);
-            res.status(200).send('OK, la carpeta fue renombrada con éxito ' + folder_location + ' => ' + new_folder_location);
+            res.status(200).send({'message': 'La carpeta fue renombrada con éxito', 'location': folder_location, 'new_location': new_folder_location});
           })
           .catch(function(error) {
-            console.log('[ERROR] Renombrando Carpeta' + folder_location);
-            res.status(500).send('ERROR2, hubo un error al renombrar la carpeta => ' + folder_location);
+            console.log('[ERROR1] Renombrando Carpeta' + folder_location);
+            res.status(500).send({'error': 'Hubo un error al renombrar la carpeta', 'location': folder_location});
           });
       }
     })
     .catch(function(error) {
-      console.log('[ERROR] Renombrando Carpeta' + folder_location);
-      res.status(500).send('ERROR1, al renombrar la carpeta => ' + folder_location);
+      console.log('[ERROR2] Renombrando Carpeta' + folder_location);
+      res.status(500).send({'error': 'Hubo un error al renombrar la carpeta', 'location': folder_location});
     });
 });
 
@@ -199,13 +201,14 @@ app.post(/\/file\/.+/, (req, res) => {
   match = destination.match(/^(.+?)\/([^\/]+)$/);
   const folder_location = match[1].replace(/\/$/, '');
   const filename = match[2]
+  res.setHeader('Content-Type', 'application/json');
 
   // chequear la existencia de la carpeta
   db.any('SELECT uuid FROM folder WHERE location = $1', [folder_location])
     .then(function(data) {
       if(data.length == 0) {
         console.log('[WARN] Carpeta destino no existe al subir archivo' + folder_location);
-        res.status(404).send('La carpeta NO existe => ' + folder_location);
+        res.status(404).send({'error': 'La carpeta indicada NO existe', 'location': folder_location});
       } else {
         const folder_uuid = data[0]['uuid'];
 
@@ -214,11 +217,11 @@ app.post(/\/file\/.+/, (req, res) => {
           .then(function(data) {
             if(data.length != 0) {
               console.log('[WARN] Ya existe un archivo con ese nombre => ' + destination);
-              res.status(409).send('La ya existe un archivo con ese nombre => ' + destination);
+              res.status(409).send({'error': 'Ya existe un archivo en ese destino', 'location': destination});
             } else {
               if(!req.files) {
                 console.log('[ERROR] No se subieron archivos');
-                res.status(400).send('ERROR1, no fue proporcionado ningun archivo');
+                res.status(400).send({'error': 'No fue proporcionado ningún archivo'});
               } else {
                 const new_uuid = uuid.v4();
                 const content = req.files.file.data;
@@ -226,18 +229,18 @@ app.post(/\/file\/.+/, (req, res) => {
                 db.any('INSERT INTO file (uuid, folder_uuid, filename, content) VALUES ($1, $2, $3, $4)', [new_uuid, folder_uuid, filename, content])
                   .then(function(data) {
                     console.log('[INFO] Archivo subido ' + destination);
-                    res.status(200).send('OK, archivo subido con exito ' + destination);
+                    res.status(200).send({'message': 'El archivo fue subido con éxito', 'location': destination});
                   })
                   .catch(function(error) {
                     console.log('[ERROR] Creando archivo' + destination);
-                    res.status(500).send('ERROR2, creando archivo => ' + destination);
+                    res.status(500).send({'error': 'Error creando el archivo', 'location': destination});
                   });
               }
             }
           })
           .catch(function(error) {
             console.log('[ERROR] No se puede crear el archivo ' + filename);
-            res.status(500).send('ERROR3, al crear el archivo => ' + destination);
+            res.status(500).send({'error': 'Error creando el archivo', 'location': destination});
           });
       }
     })
@@ -261,7 +264,9 @@ app.get(/\/file\/.+/, (req, res) => {
     .then(function(data) {
       if(data.length == 0) {
         console.log('[WARN] Carpeta inexistente' + folder_location);
-        res.status(404).send('La carpeta NO existe => ' + folder_location);
+
+        res.setHeader('Content-Type', 'application/json');
+        res.status(404).send({'error': 'La carpeta indicada NO existe', 'location': folder_location});
       } else {
         const folder_uuid = data[0]['uuid'];
 
@@ -270,7 +275,9 @@ app.get(/\/file\/.+/, (req, res) => {
           .then(function(data) {
             if(data.length == 0) {
               console.log('[WARN] No existe un archivo con ese nombre => ' + destination);
-              res.status(409).send('No existe un archivo con ese nombre => ' + destination);
+
+              res.setHeader('Content-Type', 'application/json');
+              res.status(409).send({'error': 'NO existe un archivo con ese nombre', 'location': destination});
             } else {
               const content = data[0]['content'];
               console.log('[INFO] Archivo descargado => ' + destination);
@@ -279,11 +286,13 @@ app.get(/\/file\/.+/, (req, res) => {
           })
           .catch(function(error) {
             console.log('[ERROR] No se puede descargar el archivo ' + filename);
-            res.status(500).send('ERROR3, al descargar el archivo => ' + destination);
+            res.setHeader('Content-Type', 'application/json');
+            res.status(500).send({'error': 'Error al descargar el archivo', 'location': destination});
           });
       }
     })
     .catch(function(error) {
+       res.setHeader('Content-Type', 'application/json');
       res.status(500).send('ERROR1, al descargar el archivo => ' + destination);
     });
 

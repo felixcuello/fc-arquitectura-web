@@ -78,7 +78,7 @@ Este endpoint lista el contenido de la carpeta actual
 
 **** POST /location/carpeta/nueva
 Este endpoint crea una nueva carpeta.
-: curl -v -X POST localhost:3000/location/carpeta/nueva
+: curl -v -X POST localhost:3000/location/carpeta/asdf
 
 **** DELETE /location/carpeta/a/borrar
 Este endpoint borra una carpeta. ESTA OPERACIÓN ES IRREVERSIBLE.
@@ -86,7 +86,7 @@ Este endpoint borra una carpeta. ESTA OPERACIÓN ES IRREVERSIBLE.
 
 **** PATCH /location/carpeta
 Este endpoint renombra una carpeta.
-: curl -v -X PATCH localhost:3000/location/carpeta/asdf -d '{"new_location":"/carpeta/fdsa/"}'
+: curl -v -X PATCH localhost:3000/location/carpeta/asdf -H "Content-Type: application/json" -d '{"new_location":"/carpeta/fdsa/"}'
 
 *** Archivos
 Los endpoints de archivos administran los archivos adentro de las carpetas.
@@ -99,10 +99,9 @@ Este endpoint permite subir un archivo a una determinada carpeta.
 Este endpoint permite descargar un archivo de una determinada carpeta
 : curl -X GET localhost:3000/file/carpeta/asdf/filename
 
-**** PATCH /file/carpeta/filename
+**** PATCH /file/carpeta/filename <<<<<<<<<<<<<<<<<<<<<< NO FUNCIONA
 Este endpoint permite renombrar un archivo (o moverlo de ubicación). Si se especifica un nombre sin path el archivo sólo cambia de nombre.
-: curl -X PATCH /file/carpeta/destino/filename -d '{"new_name":"/nueva/ubicacion/nuevo_nombre"}'
-
+: curl -v -X PATCH localhost:3000/file/carpeta/asdf/filename -H "Content-Type: application/json" -d '{"new_name":"/carpeta/nueva/nuevo_nombre"}'
 **** DELETE /file/carpeta/destino/filename
 Este endpoint permite borrar un archivo
 : curl -X DELETE /file/carpeta/destino/filename
