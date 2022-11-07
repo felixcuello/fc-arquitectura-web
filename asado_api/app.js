@@ -295,8 +295,61 @@ app.get(/\/file\/.+/, (req, res) => {
        res.setHeader('Content-Type', 'application/json');
       res.status(500).send('ERROR1, al descargar el archivo => ' + destination);
     });
-
 });
+
+
+///////////////////////////////////////////////////
+// RENOMBRAR ARCHIVO
+///////////////////////////////////////////////////
+app.patch(/\/file\/.+/, (req, res) => {
+  const file_location = req.originalUrl.split(/^\/file/)[1];
+  res.setHeader('Content-Type', 'application/json');
+
+  match = file_location.match(/^(.+?)\/([^\/]+)$/);
+  const folder_location = match[1].replace(/\/$/, '');
+  const filename = match[2]
+
+  db.any('SELECT fo.uuid AS folder_uuid, fi.uuid AS file_uuid FROM folder fo, file fi WHERE fo.location = $1 AND fi.filename = $2 AND fo.uuid = fi.folder_uuid', [folder_location, filename])
+    .then(function(data) {
+      if(data.length == 0) {
+        console.log('[WARN] Renombrando archivo de una carpeta Inexistente ' + folder_location);
+        res.status(404).send({'error': 'El archivo de ORIGEN no existe', 'location': file_location});
+      } else {
+        new_file_location = req.body['new_location'].replace(/\/$/, '');
+        match = new_file_location.match(/^(.+?)\/([^\/]+)$/);
+
+        const new_folder_location = match[1].replace(/\/$/, '');
+        const new_filename = match[2]
+        const folder_uuid = data[0]['folder_uuid'];
+        const file_uuid = data[0]['file_uuid'];
+
+        db.any('SELECT uuid FROM folder WHERE location = $1', [new_folder_location])
+          .then(function(data) {
+            const new_folder_uuid = data[0]['uuid'];
+
+            db.any('UPDATE file SET folder_uuid = $1, filename = $2 WHERE uuid = $3', [new_folder_uuid, new_filename, file_uuid])
+              .then(function(data) {
+                console.log('[INFO] Archivo Renombrada ' + file_location + ' => ' + new_file_location);
+                res.status(200).send({'message': 'El archivo fue renombrado con éxito', 'location': file_location, 'new_location': new_file_location});
+              })
+              .catch(function(error) {
+                console.log('[ERROR1] Renombrando Archivo' + file_location);
+                res.status(500).send({'error': 'Hubo un error al renombrar el archivo', 'location': file_location});
+              });
+          })
+          .catch(function(error) {
+            console.log('[ERROR2] Renombrando Archivo: ' + file_location);
+            res.status(404).send({'error': 'El archivo destino no existe', 'location': new_file_location});
+          });
+
+      }
+    })
+    .catch(function(error) {
+      console.log('[ERROR2] Renombrando Archivo: ' + file_location);
+      res.status(500).send({'error': 'Hubo un error al renombrar el archivo', 'location': file_location});
+    });
+});
+
 
 
 ///////////////////////////////////////////////////////////////
