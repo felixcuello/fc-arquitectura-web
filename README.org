@@ -21,7 +21,13 @@
 
 ** Descripción del Negocio
 
-La idea de este trabajo práctico es el de armar una API que sea un file server al estilo S3 que permita administrar carpetas y archivos de forma tal de que se puedan administrar carpetas y archivos de manera remota.
+La idea de este trabajo práctico es el de armar una API que sea un file server al estilo S3 que permita administrar carpetas y archivos de forma tal de que se puedan administrar carpetas y archivos de manera remota. Por eso el nombre:
+
+- *A* lmacenamiento => Es un repositorio de datos.
+- *S* eguro => Tiene replicación permanente.
+- *A* rchivos => Sólo permite almacenar archivos.
+- *D* urables => El almacenamiento es indefinido.
+- *O* rganizado => Los archivos pueden organizarse en carpetas.
 
 Mínimamente tiene que permitir hacer lo siguiente:
 
